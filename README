@@ -4,39 +4,8 @@ Author: Kevin Smith - http://kismith.co.uk
 
 License: GPL2
 
--- Getting Started: --
+MaybeLater is an application to help you with managing your Getting Things Done task lists. It's web-based, so you can access it anywhere you have a web browser and an internet connection, and it's open source, so you can deploy it on your own server. It supports multiple users in the same system.
 
-Requirements:
-* Python 2.4 or later
+Built on the Django framework for Python, it's easy to customise without re-inventing the wheel.
 
-These instructions assume that you don't already have a Django deployment, because that's the most common case at the moment. If you're trying to slot this into an existing Django project, you probably know what you're doing anyway. 
-
-Step one:
-Installing Django. See http://www.djangoproject.com/documentation/install/ for full instructions. Skip this step if you already have Django 0.97 or later installed.
-'cd' to where you want to install Django. Django will be run from this location.
-svn co http://code.djangoproject.com/svn/django/trunk/ django-trunk
-cd django-trunk
-SP=`python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
-sudo ln -s `pwd`/django $SP/django
-sudo ln -s `pwd`/django/bin/django-admin.py /usr/local/bin/django-admin.py
-And that's it.
-
-Step two:
-Installing MaybeLater. 
-'cd' to the directory you'd like to install MaybeLater.
-svn checkout http://maybelater.googlecode.com/svn/trunk/ maybelater-trunk
-SP=`python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"`
-cd maybelater-trunk
-sudo ln -s `pwd`/maybelater $SP/maybelater
-
-Step three:
-Importing MaybeLater to Django.
-FIXME: Create project, etc.
-
-Testing the installation:
-cd into your Django project dir.
-python manage.py runserver
-
-Getting your site live:
-I've only deployed MaybeLater with lighttpd and FastCGI, so that's what these instructions use.
-
+Please see the INSTALL file for installation details, and the COPYING file for license details.
