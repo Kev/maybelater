@@ -21,10 +21,8 @@
     </div> 
     <br style="clear: left" />
     {% block content %}
-      <div id="leftcolumn">
       {% block pretasks %}
       {% endblock %}
-      </div>
       <div id="maincontent">
       {% block tasks %}
       {% include 'simple/task_list.html' %}
@@ -39,6 +37,7 @@
     {% include 'simple/add_task_form.html' %}
     <hr />
     <p><a href="http://maybelater.googlecode.com/">MaybeLater</a>. -- <a href="/admin/">Admin interface</a> -- <a href="/logout">Logout {{user.username}}</a></p>
+
     {% endblock %}
     </div>
   </body> 
