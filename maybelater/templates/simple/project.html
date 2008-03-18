@@ -1,0 +1,27 @@
+{% extends "simple/base.html" %}
+{% block title %}Project - {{ project_name }}{% endblock %}
+{% block pretasks %}
+<h1>{{ project_name }}</h1> 
+<!-- The project listing -->
+<div id="blueblock">
+<ul>
+{% for project_dict in project_listing %} 
+  <li><a href="/project/{{ project_dict.project_object.id }}/">{{ project_dict.project_object.name }}</a></li> 
+{% endfor %}
+</ul>
+</div>
+<!-- The project listing ends -->
+<h3>Add new project</h3>
+<form action="/project/new" method="POST">
+  <label for="name">Name: </label><input type="text" name="name" />
+  <label for="parent">Parent: </label>
+  <select name="parent">
+    <option value="" selected>None</option>
+    {% for project_dict in project_listing %} 
+    <option value="{{ project_dict.project_object.id }}">{{ project_dict.project_object.name }}</option>
+    {% endfor %} 
+  </select>
+  <input type="submit" value="Add" />
+</form>
+
+{% endblock %}
