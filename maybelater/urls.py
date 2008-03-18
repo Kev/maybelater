@@ -22,5 +22,10 @@ urlpatterns = patterns('maybelater.views',
     (r'^task/\d+/$', 'task'),
     (r'^$', 'outstanding'),
     (r'^generate-test-data$', 'generateTestData'), #demo data - you want to disable this in production!
-    
+)
+
+urlpatterns += patterns('',
+    #You most likely want the admin interface, but it's possible to do without.
+    (r'^admin/', include('django.contrib.admin.urls')),
+    (r'^logout/$', 'django.contrib.auth.views.logout'),
 )
