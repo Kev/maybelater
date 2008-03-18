@@ -2,7 +2,7 @@
 
 from django.shortcuts import render_to_response 
 from django.db.models import Q
-from gtd.todo.models import Task, Project, Context, PRIORITIES, EFFORTS
+from maybelater.models import Task, Project, Context, PRIORITIES, EFFORTS
 
 def templatePrefix():
     """ Return the user's chosen interface prefix.
