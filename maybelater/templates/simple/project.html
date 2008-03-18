@@ -1,6 +1,7 @@
 {% extends "simple/base.html" %}
 {% block title %}Project - {{ project_name }}{% endblock %}
 {% block pretasks %}
+<div id="leftcolumn">
 <h1>{{ project_name }}</h1> 
 <!-- The project listing -->
 <div id="blueblock">
@@ -23,5 +24,5 @@
   </select>
   <input type="submit" value="Add" />
 </form>
-
+</div>
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "simple/base.html" %}
 {% block title %}Context - {{ context_name }}{% endblock %}
 {% block pretasks %}
+<div id="leftcolumn">
 <h1>{{ context_name }}</h1> 
 <!-- The context listing -->
 <div id="blueblock">
@@ -24,5 +25,5 @@
   </select>
   <input type="submit" value="Add" />
 </form>
-
+</div>
 {% endblock %}

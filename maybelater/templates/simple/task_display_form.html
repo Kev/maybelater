@@ -9,12 +9,6 @@
     <option value="{{ context_dict.context_object.id }}" {% ifequal context_dict.context_object.id selected_task.context.id %}selected{% endifequal %}>{{ selected_task.context.name }}</option>
     {% endfor %} 
   </select>
-  <label for="priority">Priority: </label>
-  <select name="priority">
-    {% for priority_dict in priority_listing %} 
-    <option value="{{ priority_dict.index }}" >{{ priority_dict.name }}</option>
-    {% endfor %} 
-  </select>
   <label for="project">Project: </label>
   <select name="project">
     <option value=""  {% if not selected_task.project %}selected{% endif %}>None</option>

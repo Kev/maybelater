@@ -67,3 +67,4 @@ class TaskUrl(models.Model):
     """
     url = models.URLField()
     task = models.ForeignKey(Task, null=False)
+    

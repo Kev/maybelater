@@ -2,10 +2,11 @@
 
 from django.shortcuts import render_to_response 
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 from maybelater.models import Task, Project, Context, PRIORITIES, EFFORTS
 
-def templatePrefix():
-    """ Return the user's chosen interface prefix.
+def templatePrefix(request):
+    """ Return the user's chosen interface prefix, based on browser.
     """
     return "simple"
 
@@ -122,25 +123,28 @@ def mergeStandardDict(newDict, currentLink):
     for newKey in newDict:
         standard[newKey] = newDict[newKey]
     return standard
-    
+
+@login_required    
 def all_tasks(request): 
     todo_listing = [] 
     for task in Task.objects.all(): 
         todo_dict = {} 
         todo_dict['task_object'] = task 
         todo_listing.append(todo_dict) 
-    return render_to_response("%s/all_tasks.html" % templatePrefix(), { 'todo_listing': todo_listing, 'context_listing':context_listing(), 'project_listing':project_listing() })
+    return render_to_response("%s/all_tasks.html" % templatePrefix(request), { 'todo_listing': todo_listing, 'context_listing':context_listing(), 'project_listing':project_listing() })
     
 
-
+@login_required
 def completed(request): 
     (todo_listing, query) = searchTasks(request, (Q(completed=True)))
-    return render_to_response("%s/completed.html" % templatePrefix(), mergeStandardDict({'task_link_prefix':constructTaskLink('/completed', None),  'todo_listing': todo_listing, 'query': query  }, 'Completed'))
+    return render_to_response("%s/completed.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink('/completed', None),  'todo_listing': todo_listing, 'query': query  }, 'Completed'))
 
+@login_required
 def outstanding(request): 
     (todo_listing, query) = searchTasks(request, (Q(completed=False)))
-    return render_to_response("%s/outstanding.html" % templatePrefix(), mergeStandardDict({'task_link_prefix':constructTaskLink('/outstanding',None),  'todo_listing': todo_listing, 'query': query}, 'To Complete'))
+    return render_to_response("%s/outstanding.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink('/outstanding',None),  'todo_listing': todo_listing, 'query': query}, 'To Complete'))
 
+@login_required
 def project(request, projectId=None, taskId=None):
     projectName = "Inbox"
     if not projectId: 
@@ -159,29 +163,33 @@ def project(request, projectId=None, taskId=None):
     else:
         selected_task = None
     
-    (todo_listing, query) = searchTasks(request, (Q(project=projectId)))
-    return render_to_response("%s/project.html" % templatePrefix(), mergeStandardDict({'task_link_prefix':constructTaskLink('/project',projectId),  'selected_task':selected_task, 'todo_listing': todo_listing, 'project_name':projectName, 'query': query}, 'Projects'))
+    (todo_listing, query) = searchTasks(request, (Q(project=projectId)& Q(completed=False)))
+    return render_to_response("%s/project.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink('/project',projectId),  'selected_task':selected_task, 'todo_listing': todo_listing, 'project_name':projectName, 'query': query}, 'Projects'))
 
-
+@login_required
 def context(request, contextId=None, taskId=None):
     contextName = "Inbox"
     if contextId: 
         contextId = int(contextId)
         contextName = Context.objects.get(id=contextId).name
+        (todo_listing, query) = searchTasks(request, (Q(context=contextId) & Q(completed=False)))
     else:
         contextId = None
-    (todo_listing, query) = searchTasks(request, (Q(context=contextId)))
+        (todo_listing, query) = searchTasks(request, (Q(context__isnull=True)& Q(completed=False)))
+    
     if taskId:
         selected_task = Task.objects.get(id=taskId)
     else:
         selected_task = None
-    return render_to_response("%s/context.html" % templatePrefix(), mergeStandardDict({'task_link_prefix':constructTaskLink("/context",contextId), 'selected_task':selected_task, 'todo_listing': todo_listing, 'context_name':contextName, 'query': query}, 'Contexts'))
-    
+    return render_to_response("%s/context.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink("/context",contextId), 'selected_task':selected_task, 'todo_listing': todo_listing, 'context_name':contextName, 'query': query}, 'Contexts'))
+
+@login_required    
 def task(request, taskId): 
     taskId = int(taskId)
     taskObject = Task.objects.get(id=taskId)
-    return render_to_response("%s/task.html" % templatePrefix(), { 'task_object': taskObject })
+    return render_to_response("%s/task.html" % templatePrefix(request), { 'task_object': taskObject })
 
+@login_required
 def createContext(request): 
     name = request.POST.get('name', '')
     parent = request.POST.get('parent', '')
@@ -193,6 +201,7 @@ def createContext(request):
     newContext.save()
     return context(request, newContext.id)
 
+@login_required
 def createProject(request): 
     name = request.POST.get('name', '')
     parent = request.POST.get('parent', '')
@@ -203,11 +212,12 @@ def createProject(request):
     newProject = Project(name=name, parent=parent)
     newProject.save()
     return project(request, newProject.id)
-    
+
+@login_required    
 def createTask(request):
     pass
     
-    
+@login_required    
 def generateTestData(request):
     """ Not really a view - generate test data for a system.
     """
