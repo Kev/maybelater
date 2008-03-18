@@ -1,13 +1,20 @@
 /* 
 	TagBox table styles
 	written by TagBox http://www.tagbox.de
+	
+	colours modified -kismith
 */
+
+body {
+  font: normal 11px verdana, arial, helvetica, sans-serif;
+}
+
 table {
   border-collapse: collapse;
   border: 1px solid #03476F;
   font: normal 11px verdana, arial, helvetica, sans-serif;
   color: #363636;
-  background: #92C428;
+  background: #2175bc;
   }
 caption {
   text-align: center;
@@ -37,7 +44,7 @@ tbody td a {
   color: #363636;
   }
 tbody td a:hover {
-  background: #C2F64D;
+  background: #5ba3e0;
   color: #363636;
   }
 tbody th a {
@@ -71,6 +78,6 @@ tbody tr:hover {
   }
 tbody tr:hover th,
 tbody tr.odd:hover th {
-  background: #FFD800;
+  background: #5ba3e0;
   color: #FFFFFF;
   }

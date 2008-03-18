@@ -3,10 +3,12 @@
 /*Credits: Dynamic Drive CSS Library */
 /*URL: http://www.dynamicdrive.com/style/ */
 
+/*Colours modified*/
+
 #modernbricksmenu2{
 padding: 0;
 width: 100%;
-border-top: 5px solid #D25A0B; /*Brown color theme*/ 
+border-top: 5px solid #2175bc; /*Brown color theme*/ 
 background: transparent;
 voice-family: "\"}\"";
 voice-family: inherit;
@@ -39,14 +41,14 @@ border-top: 1px solid white;
 }
 
 #modernbricksmenu2 a:hover{
-background-color: #D25A0B; /*Brown color theme*/ 
+background-color: #2175bc; /*Brown color theme*/ 
 color: white;
 }
 
 #modernbricksmenu2 #current a{ /*currently selected tab*/
-background-color: #D25A0B; /*Brown color theme*/ 
+background-color: #2175bc; /*Brown color theme*/ 
 color: white;
-border-color: #D25A0B; /*Brown color theme*/ 
+border-color: #2175bc; /*Brown color theme*/ 
 }
 
 #myform{ /*CSS for sample search box. Remove if desired */
