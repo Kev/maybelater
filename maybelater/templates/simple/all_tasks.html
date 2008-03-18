@@ -1,0 +1,12 @@
+{% extends "simple/base.html" %}
+{% block title %}To-do List Status Report{% endblock %}
+{% block content %}
+<h1>To-do list status report</h1> 
+{% for task_dict in todo_listing %} 
+<h2>{{ task_dict.task_object.name }}</h2> 
+<ul> 
+  <li>Priority: {{ task_dict.task_object.priority }}</li> 
+  <li>Due: {{ task_dict.task_object.dueDate }} </li> 
+</ul> 
+{% endfor %} 
+{% endblock %}

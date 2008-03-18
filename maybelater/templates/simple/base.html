@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"> 
+	<head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+    <link href="/css/base.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="/css/blueblocks.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="/css/modernbricks.css" rel="stylesheet" type="text/css" media="screen" />
+    <link href="/css/tagbox.css" rel="stylesheet" type="text/css" media="screen" />
+    <title>{% block title %}{% endblock %}</title> 
+  </head> 
+  <body>
+    <div id="modernbricksmenu2">
+      <ul> 
+        <li style="margin-left: 1px"><a href="/context">Inbox</a></li>
+        {% for menu_item in menu_items %}
+        <li {% if menu_item.current %}id="current"{% endif %}><a href="{{ menu_item.link }}">{{ menu_item.name }}</a></li>
+        {% endfor %}
+
+      </ul>
+      <form id="myform" action="." method="GET">      <label for="search">Search: </label><input type="text" class="textinput" name="search" value="{{ query|escape }}"><input class="submit" type="submit" value="Search"></form>
+    </div> 
+    <br style="clear: left" />
+    {% block content %}
+      <div id="leftcolumn">
+      {% block pretasks %}
+      {% endblock %}
+      </div>
+      <div id="maincontent">
+      {% block tasks %}
+      {% include 'simple/task_list.html' %}
+      {% endblock %}
+      {% block posttasks %}
+      {% endblock %}
+    {% endblock %}
+    {% block footer %}
+    <hr />
+    {% include 'simple/task_display_form.html' %}
+    <hr />
+    {% include 'simple/add_task_form.html' %}
+    <hr />
+    <p>Kevin's GTD. -- <a href="/admin/">Admin interface</a></p>
+    {% endblock %}
+    </div>
+  </body> 
+</html>

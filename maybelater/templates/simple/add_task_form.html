@@ -1,0 +1,25 @@
+<h3>Add new task</h3>
+<form action="/task/new" method="POST">
+  <label for="name">Name: </label><input type="text" name="name" />
+  <label for="context">Context: </label>
+  <select name="context">
+    <option value=""  {% if not current_context %}selected{% endif %}>None</option>
+    {% for context_dict in context_listing %} 
+    <option value="{{ context_dict.context_object.id }}" {% ifequal current_context context_dict.context_object.id %}selected{% endifequal %}>{{ context_dict.context_object.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="priority">Priority: </label>
+  <select name="priority">
+    {% for priority_dict in priority_listing %} 
+    <option value="{{ priority_dict.index }}" >{{ priority_dict.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="effort">Effort: </label>
+  <select name="effort">
+    {% for effort_dict in effort_listing %} 
+    <option value="{{ effort_dict.index }}" >{{ effort_dict.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="startDate">Start date: </label><input type="text" name="startDate" />
+  <label for="dueDate">Due date: </label><input type="text" name="dueDate" />
+  <input type="submit" value="Add" /></form>

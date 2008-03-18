@@ -1,0 +1,42 @@
+
+<form action="/task/edit" method="POST">
+  <label type="hidden" value="{{ selected_task.id }}" />
+  <label for="name">Name: </label><input type="text" name="name" value="{{ selected_task.name }}" />
+  <label for="context">Context: </label>
+  <select name="context">
+    <option value=""  {% if not current_context %}selected{% endif %}>None</option>
+    {% for context_dict in context_listing %} 
+    <option value="{{ context_dict.context_object.id }}" {% ifequal context_dict.context_object.id selected_task.context.id %}selected{% endifequal %}>{{ selected_task.context.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="priority">Priority: </label>
+  <select name="priority">
+    {% for priority_dict in priority_listing %} 
+    <option value="{{ priority_dict.index }}" >{{ priority_dict.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="project">Project: </label>
+  <select name="project">
+    <option value=""  {% if not selected_task.project %}selected{% endif %}>None</option>
+    {% for project_dict in project_listing %} 
+    <option value="{{ project_dict.project_object.id }}" {% ifequal project_dict.project_object.id selected_task.project.id %}selected{% endifequal %}>{{ selected_task.project.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="priority">Priority: </label>
+  <select name="priority">
+    {% for priority_dict in priority_listing %} 
+    <option value="{{ priority_dict.index }}" {% ifequal priority_dict.index selected_task.priority %}selected{% endifequal %}>{{ priority_dict.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="effort">Effort: </label>
+  <select name="effort">
+    {% for effort_dict in effort_listing %} 
+    <option value="{{ effort_dict.index }}" {% ifequal effort_dict.index selected_task.effort %}selected{% endifequal %}>{{ effort_dict.name }}</option>
+    {% endfor %} 
+  </select>
+  <label for="notes">Notes: </label>
+  <textarea name="notes" COLS=40 ROWS=6>{{ selected_task.notes }}</TEXTAREA>
+  <label for="startDate">Start date: </label><input type="text" name="startDate" value="{{ selected_task.startDate }}" />
+  <label for="dueDate">Due date: </label><input type="text" name="dueDate" value="{{ selected_task.dueDate }}" />
+  <input type="submit" value="Save" />
+</form>
