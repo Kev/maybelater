@@ -23,6 +23,18 @@ sudo ln -s `pwd`/maybelater $SP/maybelater
 
 Step three:
 Importing MaybeLater to Django.
+still in the maybelater-trunk folder:
+ML=`pwd`
+cd to the folder you'll use for running maybelater from for testing
+cp $ML/examples/projectroot/* .
+Now edit settings.py. Please read all the comments before you run it - some are important.
+Temporarily, only for testing, you can edit urls.py to enable serving the css pages in the django testserver by removing the leading # from the line starting #(r'^css - be sure to put this back before you deploy maybelater 'for real'
+Now set up your database for use with maybelater by running
+python manage.py syncdb
+You will be prompted to create an account.
+Now you're ready to test maybelater!
+python manage.py runserver
+Now point your webbrowser at 127.0.0.1:8000 and enjoy
 FIXME: Create project, etc.
 
 Testing the installation:

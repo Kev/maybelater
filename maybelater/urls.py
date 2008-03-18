@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 
-urlpatterns = patterns('gtd.todo.views',
+urlpatterns = patterns('maybelater.views',
 
     (r'^report/$', 'all_tasks'), #this one's just a test
     #(r'^archived/$', 'archived'),
