@@ -132,6 +132,7 @@ def mergeStandardDict(request, newDict, currentLink):
 def user_request_okay(user, taskId=None, contextId=None, projectId=None):
     """ Checks that the user has access to the specified items.
     """
+    #FIXME - needs testing
     if taskId:
         task = Task.objects.get(id=taskId)
         if not task or not task.user == user:
@@ -249,9 +250,71 @@ def createProject(request):
 
 @login_required    
 def createTask(request):
-    if not user_request_okay(request.user, projectId=projectId, contextId=contextId, taskId=taskId):
+    name = request.POST.get('name', None)
+    projectId = request.POST.get('project', None)
+    contextId = request.POST.get('context', None)
+    if not user_request_okay(request.user, projectId=projectId, contextId=contextId):
         return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
-    pass
+    if projectId:
+        taskProject = Project.objects.get(id=int(projectId))
+    else:
+        taskProject = None
+    if contextId:
+        taskContext = Context.objects.get(id=int(contextId))
+    else:
+        taskContext = None
+    newTask = Task(name=name, project=taskProject, context=taskContext, user=request.user)
+    newTask.save()
+    return context(request, contextId, newTask.id)
+
+@login_required    
+def editTask(request):
+    name = request.POST.get('name', None)
+    projectId = request.POST.get('project', None)
+    contextId = request.POST.get('context', None)
+    taskId = request.POST.get('task', None)
+
+    if projectId:
+        projectId = int(projectId)
+    else:
+        projectId = None
+    if contextId:
+        contextId = int(contextId)
+    else:
+        contextId = None
+    if taskId:
+        taskId = int(taskId)
+    else:
+        taskId = None
+
+    if not user_request_okay(request.user, taskId=taskId, projectId=projectId, contextId=contextId):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
+    task = Task.objects.get(id=taskId)
+    if projectId:
+        taskProject = Project.objects.get(id=int(projectId))
+    else:
+        taskProject = None
+    if contextId:
+        taskContext = Context.objects.get(id=int(contextId))
+    else:
+        taskContext = None
+    task.name = name
+    task.project = taskProject
+    task.context = taskContext
+    task.effort = int(request.POST.get('effort', None))
+    task.priority = int(request.POST.get('priority', None))
+    task.notes = request.POST.get('notes', '')
+    newStartDate = request.POST.get('startDate', 'None')
+    if newStartDate == "None":
+        newStartDate = ""
+    newDueDate = request.POST.get('dueDate', 'None')
+    if newDueDate == "None":
+        newDueDate = ""
+    task.startDate = newStartDate
+    task.dueDate = newDueDate
+
+    task.save()
+    return context(request, contextId, task.id)
     
 @login_required    
 def generateTestData(request):

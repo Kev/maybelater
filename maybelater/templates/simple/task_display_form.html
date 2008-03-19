@@ -1,19 +1,19 @@
 
 <form action="/task/edit" method="POST">
-  <label type="hidden" value="{{ selected_task.id }}" />
+  <input type="hidden" name="task" value="{{ selected_task.id }}" />
   <label for="name">Name: </label><input type="text" name="name" value="{{ selected_task.name }}" />
   <label for="context">Context: </label>
   <select name="context">
     <option value=""  {% if not current_context %}selected{% endif %}>None</option>
     {% for context_dict in context_listing %} 
-    <option value="{{ context_dict.context_object.id }}" {% ifequal context_dict.context_object.id selected_task.context.id %}selected{% endifequal %}>{{ selected_task.context.name }}</option>
+    <option value="{{ context_dict.context_object.id }}" {% ifequal context_dict.context_object.id selected_task.context.id %}selected{% endifequal %}>{{ context_dict.context_object.name }}</option>
     {% endfor %} 
   </select>
   <label for="project">Project: </label>
   <select name="project">
     <option value=""  {% if not selected_task.project %}selected{% endif %}>None</option>
     {% for project_dict in project_listing %} 
-    <option value="{{ project_dict.project_object.id }}" {% ifequal project_dict.project_object.id selected_task.project.id %}selected{% endifequal %}>{{ selected_task.project.name }}</option>
+    <option value="{{ project_dict.project_object.id }}" {% ifequal project_dict.project_object.id selected_task.project.id %}selected{% endifequal %}>{{ project_dict.project_object.name }}</option>
     {% endfor %} 
   </select>
   <label for="priority">Priority: </label>
