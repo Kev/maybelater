@@ -8,7 +8,14 @@
     <option value="{{ context_dict.context_object.id }}" {% ifequal current_context context_dict.context_object.id %}selected{% endifequal %}>{{ context_dict.context_object.name }}</option>
     {% endfor %} 
   </select>
-  <label for="priority">Priority: </label>
+  <label for="project">Project: </label>
+  <select name="project">
+    <option value=""  {% if not current_project %}selected{% endif %}>None</option>
+    {% for project_dict in project_listing %} 
+    <option value="{{ project_dict.project_object.id }}" {% ifequal project_dict.project_object.id current_project %}selected{% endifequal %}>{{ project_dict.project_object.name }}</option>
+    {% endfor %} 
+  </select>
+<!--  <label for="priority">Priority: </label>
   <select name="priority">
     {% for priority_dict in priority_listing %} 
     <option value="{{ priority_dict.index }}" >{{ priority_dict.name }}</option>
@@ -21,5 +28,5 @@
     {% endfor %} 
   </select>
   <label for="startDate">Start date: </label><input type="text" name="startDate" />
-  <label for="dueDate">Due date: </label><input type="text" name="dueDate" />
+  <label for="dueDate">Due date: </label><input type="text" name="dueDate" />-->
   <input type="submit" value="Add" /></form>
