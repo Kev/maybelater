@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.contrib.auth.views import *
 
 urlpatterns = patterns('maybelater.views',
-    (r'^report/$', 'all_tasks'), #this one's just a test
+    #(r'^report/$', 'all_tasks'), #this one's just a test, don't enable it (allows you to see all tasks for all users)
     #(r'^archived/$', 'archived'),
     (r'^outstanding/$', 'outstanding'),
     (r'^completed/$', 'completed'),

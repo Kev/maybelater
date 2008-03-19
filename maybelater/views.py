@@ -10,19 +10,14 @@ def templatePrefix(request):
     """
     return "simple"
 
-def standardDict():
-    """ Return values which are useful in most templates.
-    """
-    return {}
-
-def taskSearchFilter(query):
-    """ Generate tuple of Q filters for Tasks.
+def taskSearchFilter(query, user):
+    """ Generate tuple of Q filters for Tasks for this User.
     """
     return (
         Q(name__icontains=query) |
         Q(project__name__icontains=query) |
         Q(context__name__icontains=query)
-    )
+    ) 
 
 def searchTasks(request, filterQ=()):
     """ Search the tasks for the given filter, also filtering by search term
@@ -30,9 +25,9 @@ def searchTasks(request, filterQ=()):
     """
     query = request.GET.get('search', '')
     if query:
-        tasks = Task.objects.filter(taskSearchFilter(query) & filterQ).distinct()
+        tasks = Task.objects.filter(taskSearchFilter(query) & filterQ & Q(user=request.user)).distinct()
     else:
-        tasks = Task.objects.filter(filterQ)
+        tasks = Task.objects.filter(filterQ & Q(user=request.user))
     return (taskResultToDictList(tasks), query)
 
 def taskResultToDictList(tasks):
@@ -49,21 +44,31 @@ def taskResultToDictList(tasks):
         todo_listing.append(todo_dict)
     return todo_listing
 
-def context_listing():
-    """ List all contexts
+def user_contexts(user):
+    """ Return the contexts filtered by user
+    """
+    return Context.objects.filter(user=user)
+    
+def context_listing(user):
+    """ List all contexts for this user
     """
     context_listing = [] 
-    for context in Context.objects.all(): 
+    for context in user_contexts(user): 
         context_dict = {} 
         context_dict['context_object'] = context 
         context_listing.append(context_dict)
     return context_listing
 
-def project_listing():
+def user_projects(user):
+    """ Return the projects, filtered by user
+    """
+    return Project.objects.filter(user=user)
+
+def project_listing(user):
     """ List all projects
     """
     project_listing = [] 
-    for project in Project.objects.all(): 
+    for project in user_projects(user): 
         project_dict = {} 
         project_dict['project_object'] = project 
         project_listing.append(project_dict)
@@ -115,14 +120,32 @@ def menu_items(currentLink):
     return links
 
 
-def mergeStandardDict(newDict, currentLink):
+def mergeStandardDict(request, newDict, currentLink):
     """ Merges specialist dict with the standard template args.
         Specialist keys overwrite standard keys.
     """  
-    standard = {'menu_items':menu_items(currentLink), 'context_listing':context_listing(), 'project_listing':project_listing(), 'effort_listing':effort_listing(), 'priority_listing':priority_listing()}
+    standard = {'user':request.user, 'menu_items':menu_items(currentLink), 'context_listing':context_listing(request.user), 'project_listing':project_listing(request.user), 'effort_listing':effort_listing(), 'priority_listing':priority_listing()}
     for newKey in newDict:
         standard[newKey] = newDict[newKey]
     return standard
+
+def user_request_okay(user, taskId=None, contextId=None, projectId=None):
+    """ Checks that the user has access to the specified items.
+    """
+    if taskId:
+        task = Task.objects.get(id=taskId)
+        if not task or not task.user == user:
+            return False
+    if contextId:
+        context = Context.objects.get(id=contextId)
+        if not context or not context.user == user:
+            return False
+    if projectId:
+        project = Project.objects.get(id=projectId)
+        if not project or not project.user == user:
+            return False
+    return True
+            
 
 @login_required    
 def all_tasks(request): 
@@ -137,19 +160,21 @@ def all_tasks(request):
 @login_required
 def completed(request): 
     (todo_listing, query) = searchTasks(request, (Q(completed=True)))
-    return render_to_response("%s/completed.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink('/completed', None),  'todo_listing': todo_listing, 'query': query  }, 'Completed'))
+    return render_to_response("%s/completed.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/completed', None),  'todo_listing': todo_listing, 'query': query  }, 'Completed'))
 
 @login_required
 def outstanding(request): 
     (todo_listing, query) = searchTasks(request, (Q(completed=False)))
-    return render_to_response("%s/outstanding.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink('/outstanding',None),  'todo_listing': todo_listing, 'query': query}, 'To Complete'))
+    return render_to_response("%s/outstanding.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/outstanding',None),  'todo_listing': todo_listing, 'query': query}, 'To Complete'))
 
 @login_required
 def project(request, projectId=None, taskId=None):
+    if not user_request_okay(request.user, projectId=projectId, taskId=taskId):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     projectName = "Inbox"
     if not projectId: 
-        if len(Project.objects.all()) > 0:
-            projectId = Project.objects.all()[0].id
+        if len(user_projects(request.user)) > 0:
+            projectId = user_projects(request.user)[0].id 
         else:
             projectId = None
     else:    
@@ -164,10 +189,12 @@ def project(request, projectId=None, taskId=None):
         selected_task = None
     
     (todo_listing, query) = searchTasks(request, (Q(project=projectId)& Q(completed=False)))
-    return render_to_response("%s/project.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink('/project',projectId),  'selected_task':selected_task, 'todo_listing': todo_listing, 'project_name':projectName, 'query': query}, 'Projects'))
+    return render_to_response("%s/project.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/project',projectId),  'selected_task':selected_task, 'todo_listing': todo_listing, 'project_name':projectName, 'query': query}, 'Projects'))
 
 @login_required
 def context(request, contextId=None, taskId=None):
+    if not user_request_okay(request.user, contextId=contextId, taskId=taskId):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     contextName = "Inbox"
     if contextId: 
         contextId = int(contextId)
@@ -181,10 +208,12 @@ def context(request, contextId=None, taskId=None):
         selected_task = Task.objects.get(id=taskId)
     else:
         selected_task = None
-    return render_to_response("%s/context.html" % templatePrefix(request), mergeStandardDict({'task_link_prefix':constructTaskLink("/context",contextId), 'selected_task':selected_task, 'todo_listing': todo_listing, 'context_name':contextName, 'query': query}, 'Contexts'))
+    return render_to_response("%s/context.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink("/context",contextId), 'selected_task':selected_task, 'todo_listing': todo_listing, 'context_name':contextName, 'query': query}, 'Contexts'))
 
 @login_required    
 def task(request, taskId): 
+    if not user_request_okay(request.user, taskId=taskId):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     taskId = int(taskId)
     taskObject = Task.objects.get(id=taskId)
     return render_to_response("%s/task.html" % templatePrefix(request), { 'task_object': taskObject })
@@ -193,28 +222,35 @@ def task(request, taskId):
 def createContext(request): 
     name = request.POST.get('name', '')
     parent = request.POST.get('parent', '')
+    if not user_request_okay(request.user, contextId=parent):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     if parent:
         parent = Context.objects.get(id=int(parent))
     else:
         parent = None
-    newContext = Context(name=name, parent=parent)
+    newContext = Context(name=name, parent=parent, user=request.user)
     newContext.save()
     return context(request, newContext.id)
 
 @login_required
 def createProject(request): 
+
     name = request.POST.get('name', '')
     parent = request.POST.get('parent', '')
+    if not user_request_okay(request.user, projectId=parent):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     if parent:
         parent = Project.objects.get(id=int(parent))
     else:
         parent = None
-    newProject = Project(name=name, parent=parent)
+    newProject = Project(name=name, parent=parent, user=request.user)
     newProject.save()
     return project(request, newProject.id)
 
 @login_required    
 def createTask(request):
+    if not user_request_okay(request.user, projectId=projectId, contextId=contextId, taskId=taskId):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     pass
     
 @login_required    
@@ -223,16 +259,16 @@ def generateTestData(request):
     """
     projects = {}
     for name in ("Psi", "GTD", "Housework", "Inventing"):
-        project = Project(name=name)
+        project = Project(name=name, user=request.user)
         project.save()
         projects[name] = project
     contexts = {}
     for name in ("Home", "Work", "On the road", "Shopping"):
-        context = Context(name=name)
+        context = Context(name=name, user=request.user)
         context.save()
         contexts[name] = context
     stuff = {'Do stuff':None, 'Do Psi stuff':projects['Psi'], 'Wash dishes':projects['Housework']}
     for name in stuff:
-        task = Task(name=name, project=stuff[name])
+        task = Task(name=name, project=stuff[name], user=request.user)
         task.save()
     return HttpResponse("Done")
