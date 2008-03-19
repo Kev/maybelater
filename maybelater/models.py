@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 import datetime
 
@@ -6,7 +7,7 @@ import datetime
 class Project(models.Model): 
     name = models.CharField(max_length=250, unique=True) 
     parent = models.ForeignKey('self', blank=True, null=True)
-    
+    user = models.ForeignKey(User)
     def __unicode__(self): 
         return self.name 
  
@@ -18,6 +19,7 @@ class Project(models.Model):
 class Context(models.Model): 
     name = models.CharField(max_length=250, unique=True) 
     parent =  models.ForeignKey('self', blank=True, null=True)
+    user = models.ForeignKey(User)
     def __unicode__(self): 
         return self.name 
 
@@ -54,6 +56,7 @@ class Task(models.Model):
     createdDate = models.DateTimeField(default=datetime.datetime.now) 
     startDate = models.DateTimeField(null=True, blank=True) 
     dueDate = models.DateTimeField(null=True, blank=True) 
+    user = models.ForeignKey(User)
  
     def __unicode__(self): 
         return self.name 
