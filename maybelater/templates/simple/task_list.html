@@ -1,9 +1,10 @@
 <h3>Tasks</h3>  
 <div id="tasklist">
   <table>
-    <tr><th>Name</th><th>Priority</th><th>Effort</th><th>Context</th><th>Project</th><th>Start date</th><th>Due date</th></tr>
+    <tr><th></th><th>Name</th><th>Priority</th><th>Effort</th><th>Context</th><th>Project</th><th>Start date</th><th>Due date</th></tr>
     {% for task_dict in todo_listing %} 
     <tr {% if task_dict.odd_row %}class="odd" {% endif %}>
+	    <td><input type="checkbox" {% if task_dict.task_object.completed %}checked {% endif %} disabled/></td>
       <td><a href="{{ task_link_prefix }}/{{ task_dict.task_object.id}}">{{ task_dict.task_object.name }}</a></td> 
       <td><a href="{{ task_link_prefix }}/{{ task_dict.task_object.id}}">{{ task_dict.task_object.priority }}</a></td> 
       <td><a href="{{ task_link_prefix }}/{{ task_dict.task_object.id}}">{{ task_dict.task_object.effort }}</a></td> 
