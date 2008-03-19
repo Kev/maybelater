@@ -159,14 +159,30 @@ def all_tasks(request):
     
 
 @login_required
-def completed(request): 
+def completed(request, taskId=None): 
+    if taskId:
+        taskId = int(taskId)
+    if not user_request_okay(request.user, taskId=taskId):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
+    if taskId:
+        selected_task = Task.objects.get(id=taskId)
+    else:
+        selected_task = None
     (todo_listing, query) = searchTasks(request, (Q(completed=True)))
-    return render_to_response("%s/completed.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/completed', None),  'todo_listing': todo_listing, 'query': query  }, 'Completed'))
+    return render_to_response("%s/completed.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/completed', None),  'selected_task':selected_task, 'todo_listing': todo_listing, 'query': query  }, 'Completed'))
 
 @login_required
-def outstanding(request): 
+def outstanding(request, taskId=None): 
+    if taskId:
+        taskId = int(taskId)
+    if not user_request_okay(request.user, taskId=taskId):
+        return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     (todo_listing, query) = searchTasks(request, (Q(completed=False)))
-    return render_to_response("%s/outstanding.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/outstanding',None),  'todo_listing': todo_listing, 'query': query}, 'To Complete'))
+    if taskId:
+        selected_task = Task.objects.get(id=taskId)
+    else:
+        selected_task = None
+    return render_to_response("%s/outstanding.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/outstanding',None),  'selected_task':selected_task, 'todo_listing': todo_listing, 'query': query}, 'To Complete'))
 
 @login_required
 def project(request, projectId=None, taskId=None):
@@ -305,6 +321,11 @@ def editTask(request):
     task.priority = int(request.POST.get('priority', None))
     task.notes = request.POST.get('notes', '')
     newStartDate = request.POST.get('startDate', 'None')
+    if request.POST.get('completed', False):
+        newCompleted = True
+    else:
+        newCompleted = False
+    task.completed = newCompleted
     if newStartDate == "None":
         newStartDate = ""
     newDueDate = request.POST.get('dueDate', 'None')
