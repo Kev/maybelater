@@ -31,7 +31,27 @@
   </select>
   <label for="notes">Notes: </label>
   <textarea name="notes" COLS=40 ROWS=6>{{ selected_task.notes }}</TEXTAREA>
-  <label for="startDate">Start date: </label><input type="text" name="startDate" value="{{ selected_task.startDate }}" />
-  <label for="dueDate">Due date: </label><input type="text" name="dueDate" value="{{ selected_task.dueDate }}" />
+  <label for="startDate">Start date: </label><input type="text" name="startDate" id="startDate" value="{{ selected_task.startDate }}" />
+  <script type="text/javascript">
+      /*<[CDATA[*/
+       /*var startPicker	= new DatePicker({
+        relative	        : 'startDate',
+        language	        : 'en',
+        keepFieldEmpty    : true,
+        relativePosition  : true,
+        disableFutureDate : false,
+        //dateFormat        : 'yyyymmdd'
+        });*/
+      /*]]>*/
+      </script>
+  <label for="dueDate">Due date: </label><input type="text" name="dueDate" id="dueDate" value="{{ selected_task.dueDate }}" />
+  <script type="text/javascript">
+      /*<[CDATA[*/
+       /*var endPicker	= new DatePicker({
+        relative	: 'dueDate',
+        language	: 'en'
+        });*/
+      /*]]>*/
+      </script>
   <input type="submit" value="Save" />
 </form>
