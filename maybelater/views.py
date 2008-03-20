@@ -25,7 +25,7 @@ def searchTasks(request, filterQ=()):
     """
     query = request.GET.get('search', '')
     if query:
-        tasks = Task.objects.filter(taskSearchFilter(query) & filterQ & Q(user=request.user)).distinct()
+        tasks = Task.objects.filter(taskSearchFilter(query, request.user) & filterQ & Q(user=request.user)).distinct()
     else:
         tasks = Task.objects.filter(filterQ & Q(user=request.user))
     return (taskResultToDictList(tasks), query)
