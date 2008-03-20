@@ -5,7 +5,7 @@ import datetime
 
 
 class Project(models.Model): 
-    name = models.CharField(max_length=250, unique=True) 
+    name = models.CharField(max_length=250) 
     parent = models.ForeignKey('self', blank=True, null=True)
     user = models.ForeignKey(User)
     def __unicode__(self): 
@@ -17,7 +17,7 @@ class Project(models.Model):
         pass
 
 class Context(models.Model): 
-    name = models.CharField(max_length=250, unique=True) 
+    name = models.CharField(max_length=250) 
     parent =  models.ForeignKey('self', blank=True, null=True)
     user = models.ForeignKey(User)
     def __unicode__(self): 
