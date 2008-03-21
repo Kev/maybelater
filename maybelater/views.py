@@ -297,8 +297,8 @@ def createTask(request):
 def editProfile(request):
     """ User profile management.
     """
-    profile_error = None
-    password_error = None
+    profile_error = ''
+    password_error = ''
     user = request.user
     if request.POST.get('edit_profile', False):
         pass
