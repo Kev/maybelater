@@ -3,8 +3,10 @@
 from django.shortcuts import render_to_response 
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import check_password
 from maybelater.models import Task, Project, Context, UserJid, PRIORITIES, EFFORTS
 from django.http import HttpResponseRedirect
+
 
 def templatePrefix(request):
     """ Return the user's chosen interface prefix, based on browser.
@@ -295,8 +297,38 @@ def createTask(request):
 def editProfile(request):
     """ User profile management.
     """
-    profile=None
-    return render_to_response("%s/profile.html" % templatePrefix(request), mergeStandardDict(request, {'profile': profile}, ''))
+    profile_error = None
+    password_error = None
+    user = request.user
+    if request.POST.get('edit_profile', False):
+        pass
+    if request.POST.get('change_password', False):
+        old_password = request.POST.get('old_password', None)
+        new_password = request.POST.get('new_password', None)
+        new_password_verify = request.POST.get('new_password_verify', None)
+        if not check_password(old_password, user.password):
+            password_error = "The old password doesn't match"
+        elif not new_password == new_password_verify:
+            password_error = "The new passwords don't match"
+        elif new_password_verify == "":
+            password_error = "The password cannot be empty"
+        else:
+            user.set_password(new_password)
+            user.save()
+    try:
+        userJid = UserJid.objects.get(user=user)
+    except UserJid.DoesNotExist:
+        jid = None
+    return render_to_response("%s/profile.html" % templatePrefix(request), mergeStandardDict(request, {'profile': user, 'jid':jid, 'password_error':password_error,'profile_error':profile_error}, ''))
+        
+    
+    
+
+@login_required    
+def changePassword(request):
+    """ Change a user's password.
+    """
+    
 
 @login_required    
 def editTask(request):
