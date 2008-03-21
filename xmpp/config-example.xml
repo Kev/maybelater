@@ -1,0 +1,3 @@
+<config>
+	<auth jid='user@server.com/Resource' pass='secreteating' server='__optional__' />
+</config>
