@@ -1,3 +1,7 @@
+#adminlinks{
+    text-align: right;
+}
+
 #leftcolumn{
     position: absolute;
     /*top: 100;*/
