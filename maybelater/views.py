@@ -3,7 +3,7 @@
 from django.shortcuts import render_to_response 
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from maybelater.models import Task, Project, Context, PRIORITIES, EFFORTS
+from maybelater.models import Task, Project, Context, UserJid, PRIORITIES, EFFORTS
 from django.http import HttpResponseRedirect
 
 def templatePrefix(request):

@@ -27,6 +27,15 @@ class Context(models.Model):
         ordering = ['name'] 
     class Admin: 
         pass
+
+class UserJid(models.Model):
+    """ Hold a jid for contact with a user
+    """
+    user = models.ForeignKey(User)
+    jid = models.CharField(max_length=250, unique=True)
+    
+    class Admin: 
+        pass
    
 PRIORITIES = ( 
 (1, 'Very Low'), 
