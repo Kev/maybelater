@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from maybelater.models import Task, Project, Context, PRIORITIES, EFFORTS
+from django.http import HttpResponseRedirect
 
 def templatePrefix(request):
     """ Return the user's chosen interface prefix, based on browser.
@@ -112,8 +113,9 @@ def menu_items(currentLink):
             {'name':'Projects','link':'/project/','current':False},
             {'name':'To Complete','link':'/outstanding/','current':False},
             {'name':'Completed','link':'/completed/','current':False},
-            {'name':'Archived','link':'/archived/','current':False},
-            {'name':'Process / Review','link':'/review/','current':False}]
+            #{'name':'Archived','link':'/archived/','current':False},
+            #{'name':'Process / Review','link':'/review/','current':False}
+            ]
     for linkDict in links:
         if linkDict['name'] == currentLink:
             linkDict['current'] = True
@@ -124,7 +126,13 @@ def mergeStandardDict(request, newDict, currentLink):
     """ Merges specialist dict with the standard template args.
         Specialist keys overwrite standard keys.
     """  
-    standard = {'user':request.user, 'menu_items':menu_items(currentLink), 'context_listing':context_listing(request.user), 'project_listing':project_listing(request.user), 'effort_listing':effort_listing(), 'priority_listing':priority_listing()}
+    standard = {'user':request.user, 'menu_items':menu_items(currentLink),
+     'context_listing':context_listing(request.user), 
+     'project_listing':project_listing(request.user),   
+     'effort_listing':effort_listing(), 
+     'priority_listing':priority_listing(),
+     'return_path':request.path
+    }
     for newKey in newDict:
         standard[newKey] = newDict[newKey]
     return standard
@@ -335,7 +343,7 @@ def editTask(request):
     task.dueDate = newDueDate
 
     task.save()
-    return context(request, contextId, task.id)
+    return HttpResponseRedirect(request.POST.get('return_path','/'))
     
 @login_required    
 def generateTestData(request):
