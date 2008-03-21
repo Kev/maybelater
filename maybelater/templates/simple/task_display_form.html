@@ -1,6 +1,7 @@
 
 <form action="/task/edit" method="POST">
   <input type="hidden" name="task" value="{{ selected_task.id }}" />
+  <input type="hidden" name="return_path" value="{{ return_path }}" />
   <input type="checkbox" {% if selected_task.completed %}checked {% endif %} name="completed" value="True">Completed</input>
   <label for="name">Name: </label><input type="text" name="name" value="{{ selected_task.name }}" />
   <label for="context">Context: </label>
