@@ -292,6 +292,13 @@ def createTask(request):
     return context(request, contextId, newTask.id)
 
 @login_required    
+def editProfile(request):
+    """ User profile management.
+    """
+    profile=None
+    return render_to_response("%s/profile.html" % templatePrefix(request), mergeStandardDict(request, {'profile': profile}, ''))
+
+@login_required    
 def editTask(request):
     name = request.POST.get('name', None)
     projectId = request.POST.get('project', None)

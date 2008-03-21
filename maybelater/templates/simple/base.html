@@ -15,6 +15,12 @@
     </style>
   </head> 
   <body>
+    {% block adminlinks %}
+    <div id="adminlinks">
+      <a href="/profile/">My Profile</a> | <a href="/admin/">Admin interface</a> | <a href="/logout">Logout '{{user.username}}'</a>
+    </div>
+    {% endblock %}
+    {% block menu %}
     <div id="modernbricksmenu2">
       <ul> 
         <li style="margin-left: 1px"><a href="/context">Inbox</a></li>
@@ -25,6 +31,7 @@
       </ul>
       <form id="myform" action="." method="GET">      <label for="search">Search: </label><input type="text" class="textinput" name="search" value="{{ query|escape }}"><input class="submit" type="submit" value="Search"></form>
     </div> 
+    {% endblock %}
     <br style="clear: left" />
     {% block content %}
       {% block pretasks %}
@@ -41,10 +48,10 @@
     {% include 'simple/task_display_form.html' %}
     <hr />
     {% include 'simple/add_task_form.html' %}
-    <hr />
-    <p><a href="http://maybelater.googlecode.com/">MaybeLater</a>. -- <a href="/admin/">Admin interface</a> -- <a href="/logout">Logout '{{user.username}}'</a></p>
 
     {% endblock %}
+    <hr />
+    <p>Powered by <a href="http://maybelater.googlecode.com/">MaybeLater</a>.</p>
     </div>
   </body> 
 </html>
