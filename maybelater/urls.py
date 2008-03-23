@@ -23,7 +23,7 @@ urlpatterns = patterns('maybelater.views',
     (r'^project/(\d+)/$', 'project'),
     (r'^project/$', 'project'),
     (r'^task/\d+/$', 'task'),
-    (r'^$', 'outstanding'),
+    (r'^$', 'context'),
     (r'^generate-test-data$', 'generateTestData'), #demo data - you want to disable this in production!
     
 )

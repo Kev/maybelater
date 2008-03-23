@@ -33,6 +33,7 @@ class UserJid(models.Model):
     """
     user = models.ForeignKey(User)
     jid = models.CharField(max_length=250, unique=True)
+    authRequested = models.BooleanField(default=False)
     
     class Admin: 
         pass
