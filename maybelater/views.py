@@ -128,12 +128,24 @@ def mergeStandardDict(request, newDict, currentLink):
     """ Merges specialist dict with the standard template args.
         Specialist keys overwrite standard keys.
     """  
+    pathparts = request.path.split('/')
+    newPath = ''
+    foundTask = False
+    for part in pathparts[1:]: #ignore the first (empty) element
+        if part == "task":
+            foundTask = True
+            break
+        newPath += "/%s" % part
+    if not newPath[-1:] == "/":
+        newPath += "/"
+    newPath += "task/"
     standard = {'user':request.user, 'menu_items':menu_items(currentLink),
      'context_listing':context_listing(request.user), 
      'project_listing':project_listing(request.user),   
      'effort_listing':effort_listing(), 
      'priority_listing':priority_listing(),
-     'return_path':request.path
+     'return_path':request.path,
+     'newtask_path':newPath
     }
     for newKey in newDict:
         standard[newKey] = newDict[newKey]
@@ -291,7 +303,8 @@ def createTask(request):
         taskContext = None
     newTask = Task(name=name, project=taskProject, context=taskContext, user=request.user)
     newTask.save()
-    return context(request, contextId, newTask.id)
+    redirectPath = "%s%d" % (request.POST.get('newtask_path', "/"), newTask.id)
+    return HttpResponseRedirect(redirectPath)
 
 @login_required    
 def editProfile(request):

@@ -1,5 +1,6 @@
 <h3>Add new task</h3>
 <form action="/task/new" method="POST">
+  <input type="hidden" name="newtask_path" value="{{ newtask_path }}" />
   <label for="name">Name: </label><input type="text" name="name" />
   <label for="context">Context: </label>
   <select name="context">
