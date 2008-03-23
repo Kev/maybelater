@@ -301,7 +301,24 @@ def editProfile(request):
     password_error = ''
     user = request.user
     if request.POST.get('edit_profile', False):
-        pass
+        user.first_name = request.POST.get('first_name', '')
+        user.last_name = request.POST.get('last_name', '')
+        user.email = request.POST.get('email', '')
+        user.save()
+        if request.POST.get('jid', False):
+            try:
+                jidObject = UserJid.objects.get(user=user)
+            except UserJid.DoesNotExist:
+                jidObject = UserJid(user=user)
+            jidObject.jid = request.POST.get('jid', None)
+            jidObject.save()
+            userJid = jidObject.jid
+        else:
+            try:
+                userJid = UserJid.objects.get(user=user)
+                userJid.delete()
+            except UserJid.DoesNotExist:
+                pass
     if request.POST.get('change_password', False):
         old_password = request.POST.get('old_password', None)
         new_password = request.POST.get('new_password', None)
@@ -316,10 +333,10 @@ def editProfile(request):
             user.set_password(new_password)
             user.save()
     try:
-        userJid = UserJid.objects.get(user=user)
+        userJid = UserJid.objects.get(user=user).jid
     except UserJid.DoesNotExist:
-        jid = None
-    return render_to_response("%s/profile.html" % templatePrefix(request), mergeStandardDict(request, {'profile': user, 'jid':jid, 'password_error':password_error,'profile_error':profile_error}, ''))
+        userJid = None
+    return render_to_response("%s/profile.html" % templatePrefix(request), mergeStandardDict(request, {'profile': user, 'jid':userJid, 'password_error':password_error,'profile_error':profile_error}, ''))
         
     
     
