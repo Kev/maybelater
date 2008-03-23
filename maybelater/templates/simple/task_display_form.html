@@ -1,38 +1,38 @@
 
 <form action="/task/edit" method="POST">
   <input type="hidden" name="task" value="{{ selected_task.id }}" />
-  <input type="hidden" name="return_path" value="{{ return_path }}" />
-  <input type="checkbox" {% if selected_task.completed %}checked {% endif %} name="completed" value="True">Completed</input>
-  <label for="name">Name: </label><input type="text" name="name" value="{{ selected_task.name }}" />
+  <input type="hidden" name="return_path" value="{{ return_path }}" {% if not selected_task %}disabled{% endif %}/>
+  <input type="checkbox" {% if selected_task.completed %}checked {% endif %} name="completed" value="True" {% if not selected_task %}disabled{% endif %}>Completed</input>
+  <label for="name">Name: </label><input type="text" name="name" value="{{ selected_task.name }}"  {% if not selected_task %}disabled{% endif %}/>
   <label for="context">Context: </label>
-  <select name="context">
+  <select name="context" {% if not selected_task %}disabled{% endif %}>
     <option value=""  {% if not current_context %}selected{% endif %}>None</option>
     {% for context_dict in context_listing %} 
     <option value="{{ context_dict.context_object.id }}" {% ifequal context_dict.context_object.id selected_task.context.id %}selected{% endifequal %}>{{ context_dict.context_object.name }}</option>
     {% endfor %} 
   </select>
   <label for="project">Project: </label>
-  <select name="project">
+  <select name="project" {% if not selected_task %}disabled{% endif %}>
     <option value=""  {% if not selected_task.project %}selected{% endif %}>None</option>
     {% for project_dict in project_listing %} 
     <option value="{{ project_dict.project_object.id }}" {% ifequal project_dict.project_object.id selected_task.project.id %}selected{% endifequal %}>{{ project_dict.project_object.name }}</option>
     {% endfor %} 
   </select>
   <label for="priority">Priority: </label>
-  <select name="priority">
+  <select name="priority" {% if not selected_task %}disabled{% endif %}>
     {% for priority_dict in priority_listing %} 
     <option value="{{ priority_dict.index }}" {% ifequal priority_dict.index selected_task.priority %}selected{% endifequal %}>{{ priority_dict.name }}</option>
     {% endfor %} 
   </select>
   <label for="effort">Effort: </label>
-  <select name="effort">
+  <select name="effort" {% if not selected_task %}disabled{% endif %}>
     {% for effort_dict in effort_listing %} 
     <option value="{{ effort_dict.index }}" {% ifequal effort_dict.index selected_task.effort %}selected{% endifequal %}>{{ effort_dict.name }}</option>
     {% endfor %} 
   </select>
   <label for="notes">Notes: </label>
-  <textarea name="notes" COLS=40 ROWS=6>{{ selected_task.notes }}</TEXTAREA>
-  <label for="startDate">Start date: </label><input type="text" name="startDate" id="startDate" value="{{ selected_task.startDate }}" />
+  <textarea name="notes" COLS=40 ROWS=6 {% if not selected_task %}disabled{% endif %}>{{ selected_task.notes }}</TEXTAREA>
+  <label for="startDate">Start date: </label><input type="text" name="startDate" id="startDate" value="{{ selected_task.startDate }}" {% if not selected_task %}disabled{% endif %}/>
   <script type="text/javascript">
       /*<[CDATA[*/
        /*var startPicker	= new DatePicker({
@@ -45,7 +45,7 @@
         });*/
       /*]]>*/
       </script>
-  <label for="dueDate">Due date: </label><input type="text" name="dueDate" id="dueDate" value="{{ selected_task.dueDate }}" />
+  <label for="dueDate">Due date: </label><input type="text" name="dueDate" id="dueDate" value="{{ selected_task.dueDate }}" {% if not selected_task %}disabled{% endif %}/>
   <script type="text/javascript">
       /*<[CDATA[*/
        /*var endPicker	= new DatePicker({
@@ -54,5 +54,5 @@
         });*/
       /*]]>*/
       </script>
-  <input type="submit" value="Save" />
+  <input type="submit" value="Save" {% if not selected_task %}disabled{% endif %}/>
 </form>
