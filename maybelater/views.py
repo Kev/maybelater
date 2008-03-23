@@ -335,7 +335,7 @@ def editProfile(request):
     try:
         userJid = UserJid.objects.get(user=user).jid
     except UserJid.DoesNotExist:
-        userJid = None
+        userJid = ""
     return render_to_response("%s/profile.html" % templatePrefix(request), mergeStandardDict(request, {'profile': user, 'jid':userJid, 'password_error':password_error,'profile_error':profile_error}, ''))
         
     
