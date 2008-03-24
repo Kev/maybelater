@@ -188,8 +188,11 @@ def completed(request, taskId=None):
         return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     if taskId:
         selected_task = Task.objects.get(id=taskId)
+        if not selected_task.completed:
+            selected_task = None
     else:
         selected_task = None
+    
     (todo_listing, query) = searchTasks(request, (Q(completed=True)))
     return render_to_response("%s/completed.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/completed', None),  'selected_task':selected_task, 'todo_listing': todo_listing, 'query': query  }, 'Completed'))
 
@@ -202,6 +205,8 @@ def outstanding(request, taskId=None):
     (todo_listing, query) = searchTasks(request, (Q(completed=False)))
     if taskId:
         selected_task = Task.objects.get(id=taskId)
+        if selected_task.completed:
+            selected_task = None
     else:
         selected_task = None
     return render_to_response("%s/outstanding.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/outstanding',None),  'selected_task':selected_task, 'todo_listing': todo_listing, 'query': query}, 'To Complete'))
@@ -224,6 +229,8 @@ def project(request, projectId=None, taskId=None):
         projectName = "No projects"
     if taskId:
         selected_task = Task.objects.get(id=taskId)
+        if projectId and not selected_task.project.id == projectId:
+            selected_task = None
     else:
         selected_task = None
     
@@ -245,6 +252,12 @@ def context(request, contextId=None, taskId=None):
     
     if taskId:
         selected_task = Task.objects.get(id=taskId)
+        if contextId and not selected_task.context:
+            selected_task = None
+        elif contextId and not selected_task.context.id == contextId:
+            selected_task = None
+        if not contextId and selected_task.context:
+            selected_task = None
     else:
         selected_task = None
     return render_to_response("%s/context.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink("/context",contextId), 'selected_task':selected_task, 'todo_listing': todo_listing, 'context_name':contextName, 'query': query}, 'Contexts'))
