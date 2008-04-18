@@ -19,18 +19,21 @@ def taskSearchFilter(query, user):
     return (
         Q(name__icontains=query) |
         Q(project__name__icontains=query) |
-        Q(context__name__icontains=query)
+        Q(context__name__icontains=query) |
+        Q(notes__icontains=query)
     ) 
 
-def searchTasks(request, filterQ=()):
+def searchTasks(user, request, filterQ=()):
     """ Search the tasks for the given filter, also filtering by search term
         if request contains a GET search query
     """
-    query = request.GET.get('search', '')
-    if query:
-        tasks = Task.objects.filter(taskSearchFilter(query, request.user) & filterQ & Q(user=request.user)).distinct()
+    query = None
+    if request is not None:
+        query = request.GET.get('search', None)
+    if query is not None:
+        tasks = Task.objects.filter(taskSearchFilter(query, user) & filterQ & Q(user=user)).distinct()
     else:
-        tasks = Task.objects.filter(filterQ & Q(user=request.user))
+        tasks = Task.objects.filter(filterQ & Q(user=user))
     return (taskResultToDictList(tasks), query)
 
 def taskResultToDictList(tasks):
@@ -59,6 +62,8 @@ def context_listing(user):
     for context in user_contexts(user): 
         context_dict = {} 
         context_dict['context_object'] = context 
+        (todo_listing, query) = activeContextTasks(context.id, user)
+        context_dict['active_count'] = len(todo_listing)
         context_listing.append(context_dict)
     return context_listing
 
@@ -139,8 +144,10 @@ def mergeStandardDict(request, newDict, currentLink):
     if not newPath[-1:] == "/":
         newPath += "/"
     newPath += "task/"
+    (inbox_listing, inbox_query) = activeContextTasks(None, request.user)
     standard = {'user':request.user, 'menu_items':menu_items(currentLink),
      'context_listing':context_listing(request.user), 
+     'inbox_count':len(inbox_listing),
      'project_listing':project_listing(request.user),   
      'effort_listing':effort_listing(), 
      'priority_listing':priority_listing(),
@@ -193,7 +200,7 @@ def completed(request, taskId=None):
     else:
         selected_task = None
     
-    (todo_listing, query) = searchTasks(request, (Q(completed=True)))
+    (todo_listing, query) = searchTasks(request.user, request, (Q(completed=True)))
     return render_to_response("%s/completed.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/completed', None),  'selected_task':selected_task, 'todo_listing': todo_listing, 'query': query  }, 'Completed'))
 
 @login_required
@@ -202,7 +209,7 @@ def outstanding(request, taskId=None):
         taskId = int(taskId)
     if not user_request_okay(request.user, taskId=taskId):
         return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
-    (todo_listing, query) = searchTasks(request, (Q(completed=False)))
+    (todo_listing, query) = searchTasks(request.user, request, (Q(completed=False)))
     if taskId:
         selected_task = Task.objects.get(id=taskId)
         if selected_task.completed:
@@ -234,29 +241,38 @@ def project(request, projectId=None, taskId=None):
     else:
         selected_task = None
     
-    (todo_listing, query) = searchTasks(request, (Q(project=projectId)& Q(completed=False)))
+    (todo_listing, query) = searchTasks(request.user, request, (Q(project=projectId)& Q(completed=False)))
     return render_to_response("%s/project.html" % templatePrefix(request), mergeStandardDict(request, {'task_link_prefix':constructTaskLink('/project',projectId),  'selected_task':selected_task, 'todo_listing': todo_listing, 'project_name':projectName, 'query': query}, 'Projects'))
+
+def activeContextTasks(contextId, user, request=None):
+    """ List all the tasks which are active today in the specified context.
+        If no context is specified, inbox is used, and all unfinished tasks are returned.
+        Return is a tuple of the listing and query.
+    """
+    if contextId is not None:
+        q = (Q(context=contextId) & Q(completed=False))
+    else:
+        q = (Q(context__isnull=True) & Q(completed=False))
+    return searchTasks(user, request, q)
 
 @login_required
 def context(request, contextId=None, taskId=None):
     if not user_request_okay(request.user, contextId=contextId, taskId=taskId):
         return render_to_response("%s/pagenotfound.html", mergeStandardDict(request, {}, ''))
     contextName = "Inbox"
-    if contextId: 
+    if contextId is not None: 
         contextId = int(contextId)
         contextName = Context.objects.get(id=contextId).name
-        (todo_listing, query) = searchTasks(request, (Q(context=contextId) & Q(completed=False)))
-    else:
-        contextId = None
-        (todo_listing, query) = searchTasks(request, (Q(context__isnull=True)& Q(completed=False)))
+    (todo_listing, query) = activeContextTasks(contextId, request.user, request)
+
     
-    if taskId:
+    if taskId is not None:
         selected_task = Task.objects.get(id=taskId)
-        if contextId and not selected_task.context:
+        if contextId is not None and selected_task.context is None:
             selected_task = None
-        elif contextId and not selected_task.context.id == contextId:
+        elif contextId is not None and not selected_task.context.id == contextId:
             selected_task = None
-        if not contextId and selected_task.context:
+        if contextId is None and selected_task.context is not None:
             selected_task = None
     else:
         selected_task = None

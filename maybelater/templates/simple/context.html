@@ -6,9 +6,9 @@
 <!-- The context listing -->
 <div id="blueblock">
 <ul>
-  <li><a href="/context/">Inbox</a></li> 
+  <li><a href="/context/">Inbox ({{ inbox_count }})</a></li> 
 {% for context_dict in context_listing %} 
-  <li><a href="/context/{{ context_dict.context_object.id }}/">{{ context_dict.context_object.name }}</a></li> 
+  <li><a href="/context/{{ context_dict.context_object.id }}/">{{ context_dict.context_object.name }} ({{ context_dict.active_count }})</a></li> 
 {% endfor %}
 </ul>
 </div>
