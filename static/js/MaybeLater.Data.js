@@ -1,11 +1,11 @@
 MaybeLater.Data = function() {
     var dataRecord = Ext.data.Record.create([
-		{name: 'name'},
-		{name: 'description'},
-		{name: 'effort', type: 'int'},
-		{name: 'priority', type: 'int'},
-		{name: 'startDate', type: 'date', dateFormat: 'n/j h:ia'},
-		{name: 'dueDate', type: 'date', dateFormat: 'n/j h:ia'}
+		{name: 'name', mapping: 'fields.name'},
+		{name: 'description', mapping: 'fields.notes'},
+		{name: 'effort', type: 'int', mapping: 'fields.effort'},
+		{name: 'priority', type: 'int', mapping: 'fields.priority'},
+		{name: 'startDate', type: 'date', dateFormat: 'n/j h:ia', mapping:'fields.startDate'},
+		{name: 'dueDate', type: 'date', dateFormat: 'n/j h:ia', mapping:'fields.dueDate'}
 	]);
     
     /*var data = [

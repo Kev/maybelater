@@ -400,10 +400,14 @@ def v2ui(request):
 def v2_tasks(request):
     """ Reploy the 2nd version ui (javascript).
     """    
-    json_serializer = serializers.get_serializer("json")()
-    response = HttpResponse()
-    json_serializer.serialize(Task.objects.filter(Q(user=request.user)), ensure_ascii=False, stream=response)
-    return response
+    #json_serializer = serializers.get_serializer("json")()
+    #response = HttpResponse()
+    #json_serializer.serialize(Task.objects.filter(Q(user=request.user)), ensure_ascii=False, stream=response)
+    #return response
+    queryset = Task.objects.filter(Q(user=request.user))
+    root_name = 'tasks' # or it can be queryset.model._meta.verbose_name_plural
+    data = '{"total": %s, "%s": %s}' % (queryset.count(), root_name, serializers.serialize('json', queryset))
+    return HttpResponse(data, mimetype='text/javascript;')
     
 
 @login_required    
