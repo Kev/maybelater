@@ -5,6 +5,8 @@ urlpatterns = patterns('',
     #"Using this method is inefficient and insecure. Do not use this in a production setting. Use this only for development."
     # (http://www.djangoproject.com/documentation/static_files/)
     #(r'^css/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/path/to/maybelater/install/static/css'}), 
+    #(r'^js/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/path/to/maybelater/install/static/js'}), 
+    #(r'^ext/(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/path/to/maybelater/install/static/ext-2.1'}), 
     (r'^', include('maybelater.urls')),
      
 )

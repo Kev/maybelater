@@ -30,7 +30,7 @@ MaybeLater.Data = function() {
         createStore: function() {
             dataStore = new Ext.data.Store({
                 proxy: new Ext.data.HttpProxy({
-                    url: 'records.json', 
+                    url: '/v2/tasks', 
                     method: 'GET'
                 }),
                 sortInfo:{field: 'priority', direction: "DESC"},
