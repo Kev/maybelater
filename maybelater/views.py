@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import check_password
 from maybelater.models import Task, Project, Context, UserJid, PRIORITIES, EFFORTS
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
+from django.core import serializers
 
 
 def templatePrefix(request):
@@ -387,6 +389,25 @@ def editProfile(request):
 def changePassword(request):
     """ Change a user's password.
     """
+
+@login_required    
+def v2ui(request):
+    """ Deploy the 2nd version ui (javascript).
+    """    
+    return render_to_response("v2.html", {}, '')
+    
+@login_required    
+def v2_tasks(request):
+    """ Reploy the 2nd version ui (javascript).
+    """    
+    #json_serializer = serializers.get_serializer("json")()
+    #response = HttpResponse()
+    #json_serializer.serialize(Task.objects.filter(Q(user=request.user)), ensure_ascii=False, stream=response)
+    #return response
+    queryset = Task.objects.filter(Q(user=request.user))
+    root_name = 'tasks' # or it can be queryset.model._meta.verbose_name_plural
+    data = '{"total": %s, "%s": %s}' % (queryset.count(), root_name, serializers.serialize('json', queryset))
+    return HttpResponse(data, mimetype='text/javascript;')
     
 
 @login_required    
